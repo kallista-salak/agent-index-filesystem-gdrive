@@ -313,8 +313,10 @@ async function routeToolCall(adapter, toolName, args) {
       if (!Array.isArray(args.entries) || args.entries.length === 0) {
         throw new AifsError('INVALID_ARGS', `${toolName}: 'entries' must be a non-empty array of {path, content|content_file}`, { tool: toolName });
       }
-      // Resolve each entry's content the same three ways as aifs_write
-      // (content string, content_file local path, base64 encoding).
+      // Resolve each entry's content one of two ways: an inline `content`
+      // string or a `content_file` local path, either optionally base64
+      // (`encoding`). Unlike aifs_write, entries do not accept
+      // `content_stdin`: stdin is one stream and cannot carry many entries.
       const resolved = [];
       for (let i = 0; i < args.entries.length; i++) {
         const e = args.entries[i];
